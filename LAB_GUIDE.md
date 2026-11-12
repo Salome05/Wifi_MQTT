@@ -6,6 +6,31 @@
 
 ---
 
+## Official API & Tooling Documentation Reference
+
+Use these verified official documentation links while completing the coding tasks and PKI exercises:
+
+- **ESP-MQTT & ESP-IDF Core APIs:**
+  - [ESP-MQTT Client Programming Guide (ESP-IDF Stable Docs)](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html)
+  - [ESP-MQTT Standalone Component API Reference (`espressif.github.io/esp-mqtt`)](https://espressif.github.io/esp-mqtt/)
+  - [ESP Component Registry: `espressif/mqtt`](https://components.espressif.com/components/espressif/mqtt)
+  - [ESP-TLS API Reference (Server Verification & mTLS)](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/esp_tls.html)
+  - [ESP-IDF Event Loop Library (`esp_event`)](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/system/esp_event.html)
+- **JSON Serialization & Parsing (`cJSON`):**
+  - [ESP Component Registry: `espressif/cjson`](https://components.espressif.com/components/espressif/cjson)
+  - [DaveGamble/cJSON Official Library Documentation & API Usage](https://github.com/DaveGamble/cJSON)
+- **Eclipse Mosquitto Broker & CLI Clients:**
+  - [`mosquitto` Broker Daemon Manpage (`mosquitto-8`)](https://mosquitto.org/man/mosquitto-8.html)
+  - [`mosquitto.conf` Configuration File Reference (`listener`, `cafile`, `certfile`, `keyfile`)](https://mosquitto.org/man/mosquitto-conf-5.html)
+  - [`mosquitto_pub` CLI Publisher Manpage](https://mosquitto.org/man/mosquitto_pub-1.html)
+  - [`mosquitto_sub` CLI Subscriber Manpage](https://mosquitto.org/man/mosquitto_sub-1.html)
+- **OpenSSL PKI & X.509 Certificate Commands:**
+  - [`openssl genrsa` — RSA Private Key Generation](https://docs.openssl.org/master/man1/openssl-genrsa/)
+  - [`openssl req` — PKCS#10 Certificate Signing Request & Self-Signed Root CA](https://docs.openssl.org/master/man1/openssl-req/)
+  - [`openssl x509` — Certificate Display, Signing & `subjectAltName` Extensions](https://docs.openssl.org/master/man1/openssl-x509/)
+
+---
+
 ## 3-Hour Lab Schedule & Pacing
 
 | Time | Module | Topic | Deliverable / Checkpoint |
@@ -131,6 +156,7 @@ Open [main/lab_credentials.h](file:///home/ibeto87/Wifi_MQTT/main/lab_credential
 Now open [main/mqtt_lab.c](file:///home/ibeto87/Wifi_MQTT/main/mqtt_lab.c) and complete **Tasks 1 through 4**:
 
 #### Coding Task 1 (`mqtt_event_handler`)
+> **API Reference:** See [`esp_mqtt_event_t`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html#_CPPv416esp_mqtt_event_t), [`esp_mqtt_client_subscribe()`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html#_CPPv425esp_mqtt_client_subscribe24esp_mqtt_client_handle_tPKci), and [`esp_mqtt_client_publish()`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html#_CPPv423esp_mqtt_client_publish24esp_mqtt_client_handle_tPKcPKciii) in the ESP-IDF MQTT documentation.
 - **Task 1A (`MQTT_EVENT_CONNECTED`):**
   1. Subscribe to `s_topic_cmd` with QoS `1` using `esp_mqtt_client_subscribe(client, s_topic_cmd, 1);`.
   2. Publish a retained birth message `"{\"status\":\"online\"}"` to `s_topic_status` with QoS `1` and `retain = 1` using `esp_mqtt_client_publish()`.
@@ -140,6 +166,7 @@ Now open [main/mqtt_lab.c](file:///home/ibeto87/Wifi_MQTT/main/mqtt_lab.c) and c
   3. Call `mqtt_process_incoming_command(topic_buf, data_buf);`.
 
 #### Coding Task 2 (`mqtt_app_start_plaintext`)
+> **API Reference:** See [`esp_mqtt_client_config_t`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html#_CPPv424esp_mqtt_client_config_t), [`esp_mqtt_client_init()`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html#_CPPv420esp_mqtt_client_initPK24esp_mqtt_client_config_t), and [`esp_mqtt_client_register_event()`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html#_CPPv430esp_mqtt_client_register_event24esp_mqtt_client_handle_t18esp_mqtt_event_id_t19esp_event_handler_tPv).
 - Initialize `esp_mqtt_client_config_t mqtt_cfg = {0};`.
 - Set `mqtt_cfg.broker.address.uri = LAB_MQTT_BROKER_PLAIN_URI;`.
 - Configure Last Will and Testament inside `mqtt_cfg.session.last_will`:
@@ -149,10 +176,12 @@ Now open [main/mqtt_lab.c](file:///home/ibeto87/Wifi_MQTT/main/mqtt_lab.c) and c
 - Call `esp_mqtt_client_init()`, `esp_mqtt_client_register_event()`, and `esp_mqtt_client_start()`.
 
 #### Coding Task 3 (`mqtt_publish_telemetry`)
+> **API Reference:** See [`cJSON_CreateObject` & `cJSON_PrintUnformatted`](https://github.com/DaveGamble/cJSON#printing) in the official cJSON documentation.
 - Create a `cJSON` object containing `"student_id"`, `"mac"`, `"rssi_dbm"`, `"uptime_sec"`, and `"free_heap"`.
 - Serialize with `cJSON_PrintUnformatted()`, publish to `s_topic_telemetry` (QoS `1`, `retain = 0`), and free both the `cJSON` object (`cJSON_Delete`) and the serialized string (`free`).
 
 #### Coding Task 4 (`mqtt_process_incoming_command`)
+> **API Reference:** See [`cJSON_Parse` & `cJSON_GetObjectItemCaseSensitive`](https://github.com/DaveGamble/cJSON#parsing) in the official cJSON documentation.
 - Parse the incoming JSON string using `cJSON_Parse(payload)`.
 - Inspect the `"action"` string field:
   - `"set_interval"`: Read integer field `"value"` (between `1` and `60`), update `s_telemetry_interval_sec`, and publish an ACK JSON to `s_topic_status`.
@@ -289,6 +318,7 @@ mosquitto_sub -h 192.168.1.100 -p 8883 --cafile broker_setup/certs/ca.crt -t "la
      #define LAB_MQTT_BROKER_TLS_URI     "mqtts://<YOUR_PC_IP>:8883"
      ```
 3. **Complete Coding Task 5 (`mqtt_app_start_tls` in [main/mqtt_lab.c](file:///home/ibeto87/Wifi_MQTT/main/mqtt_lab.c)):**
+   - **API Reference:** See [MQTT over TLS (`broker.verification_t`)](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mqtt.html#_CPPv4N24esp_mqtt_client_config_t7broker_t14verification_tE) and [ESP-TLS Certificate Verification](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/esp_tls.html#tls-server-verification).
    - Set `mqtt_cfg.broker.address.uri = LAB_MQTT_BROKER_TLS_URI;`.
    - Set `mqtt_cfg.broker.verification.certificate = LAB_CA_CERT_PEM;`.
    - Include the same LWT configuration on `s_topic_status` as in Task 2.
