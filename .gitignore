@@ -5,6 +5,8 @@
 
 #server
 server/
+instructor_solutions/
+broker_setup/certs/
 
 # Directory metadata
 .directory

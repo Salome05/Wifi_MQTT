@@ -3,6 +3,7 @@ idf_component_register(
         "main.c"
         "wifi_sta.c"
         "http_rest.c"
+        "mqtt_lab.c"
     INCLUDE_DIRS
         "."
     PRIV_REQUIRES
@@ -12,4 +13,5 @@ idf_component_register(
         nvs_flash
         esp_http_client
         cjson
+        mqtt
 )
